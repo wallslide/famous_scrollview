@@ -1,0 +1,11 @@
+{
+  "generator-famous": {
+    "projectName": "famous-project",
+    "projectDesc": "Seed project to get started with Famo.us",
+    "authorLogin": "wallslide",
+    "author": {
+      "name": "Jeremy Hall",
+      "email": "github@wallslide.com"
+    }
+  }
+}
