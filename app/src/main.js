@@ -5,22 +5,19 @@ define(function(require, exports, module) {
     var Engine = require('famous/core/Engine');
     var Surface = require('famous/core/Surface');
     var Modifier = require('famous/core/Modifier');
-    var SequentialLayout = require('famous/views/SequentialLayout');
+    var Transform     = require('famous/core/Transform');
     var Scrollview = require('famous/views/Scrollview');
+    var ContainerSurface = require('famous/surfaces/ContainerSurface');
 
     // create the main context
     var mainContext = Engine.createContext();
-
-    var sequentialLayout = new SequentialLayout({
-        direction: 1
-    });
 
     var surfaces = [];
 
     // your app here
     var headerSurface = new Surface({
-        size: [768, 200],
-        content: 'Hi',
+        size: [undefined, 200],
+        content: 'banner',
         properties: {
             lineHeight: '200px',
             textAlign: 'center',
@@ -29,44 +26,43 @@ define(function(require, exports, module) {
         }
     });
 
-    var scrollSurfaces = [];
-    var infoSurface = new Scrollview();
+    var infoSurface = new Scrollview({
+        clipSize: 400
+    });
 
-    for( var i = 0; i < 5; i++ ){
+    var scrollSurfaces = [];
+    for (var i = 0; i < 15; i++){
         var temp = new Surface({
-            size: [undefined, 100],
-            content: 'Scroller' + i,
+            size: [undefined, 200],
+            content: '<div class="card">Text' + i + '</div>',
             properties: {
                 textAlign: 'center',
-                backgroundColor: 'red',
-                color: 'white'
+                lineHeight: '200px',
+                backgroundColor: '#bfbfbf',
+                color: 'black'
             }
         });
         temp.pipe(infoSurface);
         scrollSurfaces.push(temp);
     }
 
-    infoSurface.sequenceFrom(scrollSurfaces);
-
-//    var infoSurface = new Surface({
-//        size: [768, 1080],
-//        content: 'Hello',
-//        properties: {
-//            lineHeight: '200px',
-//            textAlign: 'center',
-//            backgroundColor: '#dedede',
-//            color: 'black'
-//        }
-//    });
-
-    surfaces.push(headerSurface);
-    surfaces.push(infoSurface);
-    sequentialLayout.sequenceFrom(surfaces);
-
-    var sequentialLayoutModifier = new Modifier({
-        origin: [.5,.5]
+    var scrollContainer = new ContainerSurface({
+        properties: {
+            overflow: 'hidden'
+        }
     });
 
-    mainContext.add(sequentialLayoutModifier).add(sequentialLayout);
+    scrollContainer.pipe(infoSurface);
+
+    infoSurface.sequenceFrom(scrollSurfaces);
+
+    scrollContainer.add(infoSurface);
+
+    var infoSurfaceModifier = new Modifier({
+        transform: Transform.translate(0, 200)
+    });
+
+    mainContext.add(headerSurface);
+    mainContext.add(infoSurfaceModifier).add(scrollContainer);
 
 });
